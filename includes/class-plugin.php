@@ -16,7 +16,6 @@ defined( 'ABSPATH' ) || die();
  */
 class Plugin {
 
-
 	/**
 	 * Admin hooks handler.
 	 *
@@ -31,7 +30,6 @@ class Plugin {
 	 */
 	private ?CSV_Exporter $csv_exporter = null;
 
-
 	/**
 	 * Run the plugin.
 	 *
@@ -40,21 +38,16 @@ class Plugin {
 	 * @return void
 	 */
 	public function run(): void {
-		// Register activation hook.
 		register_activation_hook( EXPORT_WCD_BASENAME, array( $this, 'activate' ) );
-
-		// Register deactivation hook.
 		register_deactivation_hook( EXPORT_WCD_BASENAME, array( $this, 'deactivate' ) );
 
-		// Initialize admin hooks.
-		if ( is_admin() ) {
-			add_action( 'admin_init', array( $this, 'init_admin_hooks' ) );
-		}
-
-		// Initialize URL rewrite handling.
 		add_action( 'init', array( $this, 'register_rewrite_rules' ) );
+		add_action( 'admin_init', array( $this, 'admin_init' ) );
+
 		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
 		add_action( 'template_redirect', array( $this, 'handle_export_request' ) );
+
+		add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
 	}
 
 	/**
@@ -65,10 +58,7 @@ class Plugin {
 	 * @return void
 	 */
 	public function activate(): void {
-		// Register rewrite rules.
 		$this->register_rewrite_rules();
-
-		// Flush rewrite rules.
 		flush_rewrite_rules();
 	}
 
@@ -80,19 +70,22 @@ class Plugin {
 	 * @return void
 	 */
 	public function deactivate(): void {
-		// Flush rewrite rules.
 		flush_rewrite_rules();
 	}
 
 	/**
-	 * Initialize admin hooks.
+	 * Admin initialization hook.
+	 *
+	 * Registers admin-related actions and hooks.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function init_admin_hooks(): void {
-		$this->get_admin_hooks();
+	public function admin_init(): void {
+		$admin_hooks = $this->get_admin_hooks();
+
+		add_action( 'wp_dashboard_setup', array( $admin_hooks, 'register_dashboard_widget' ) );
 	}
 
 	/**
@@ -133,11 +126,7 @@ class Plugin {
 	 * @return void
 	 */
 	public function register_rewrite_rules(): void {
-		add_rewrite_rule(
-			'^wp-admin/exportwcd-reports/([^/]+)\.csv$',
-			'index.php?' . QUERY_VAR_REPORT . '=$matches[1]',
-			'top'
-		);
+		add_rewrite_rule( '^wp-admin/exportwcd-reports/([^/]+)\.csv$', 'index.php?' . QUERY_VAR_REPORT . '=$matches[1]', 'top' );
 	}
 
 	/**
@@ -152,6 +141,19 @@ class Plugin {
 	public function register_query_vars( array $vars ): array {
 		$vars[] = QUERY_VAR_REPORT;
 		return $vars;
+	}
+
+	/**
+	 * Declare High-Performance Order Storage (HPOS) compatibility.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function declare_hpos_compatibility(): void {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', EXPORT_WCD_FILE, true );
+		}
 	}
 
 	/**
@@ -174,17 +176,15 @@ class Plugin {
 			wp_die(
 				esc_html__( 'You do not have permission to export customer data.', 'export-woo-customer-data' ),
 				esc_html__( 'Permission Denied', 'export-woo-customer-data' ),
-				array( 'response' => 403 )
+				array(
+					'response' => 403,
+				)
 			);
 		}
 
 		// Validate report type.
 		if ( ! in_array( $report_type, array( REPORT_TYPE_ALL_USERS, REPORT_TYPE_CUSTOMERS ), true ) ) {
-			wp_die(
-				esc_html__( 'Invalid report type.', 'export-woo-customer-data' ),
-				esc_html__( 'Invalid Request', 'export-woo-customer-data' ),
-				array( 'response' => 400 )
-			);
+			wp_die( esc_html__( 'Invalid report type.', 'export-woo-customer-data' ), esc_html__( 'Invalid Request', 'export-woo-customer-data' ), array( 'response' => 400 ) );
 		}
 
 		// Generate and serve CSV export.
@@ -196,7 +196,7 @@ class Plugin {
 			$exporter->export_customers_only();
 		}
 
-		exit;
+		exit();
 	}
 
 	/**

@@ -1,7 +1,14 @@
 # Export Woo Customer Data
 
-**Version:** 1.0.0  
-**Requires:** WordPress 6.0+, PHP 8.0+, WooCommerce 7.0+  
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue.svg)
+![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)
+![WooCommerce](https://img.shields.io/badge/WooCommerce-9.0%2B-96588a.svg)
+![License](https://img.shields.io/badge/license-GPLv2-green.svg)
+![HPOS Compatible](https://img.shields.io/badge/HPOS-Compatible-green.svg)
+
+**Version:** 1.1.0  
+**Requires:** WordPress 6.0+, PHP 8.0+, WooCommerce 9.0+  
 **License:** GPLv2 or later
 
 A lightweight WordPress/WooCommerce utility plugin to export customer data via CSV with customizable fields.

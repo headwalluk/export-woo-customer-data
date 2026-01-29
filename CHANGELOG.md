@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-01-29
+
+### Changed
+- Refactored plugin architecture for better maintainability
+- Extracted dashboard widget rendering to separate template file
+- Improved code organization with proper class structure
+- Enhanced PHPDoc comments throughout codebase
+
+### Added
+- Admin_Hooks class for handling admin-related functionality
+- Template file `admin-templates/dashboard-widget.php`
+- Lazy loading pattern for class instantiation
+- Comprehensive inline documentation
+
+### Removed
+- Commented-out legacy code blocks
+- Unnecessary inline comments
+- Redundant code duplication
+
+### Technical
+- All code now follows WordPress Coding Standards (PHPCS verified)
+- Improved separation of concerns in class structure
+- Better template system following WordPress best practices
+
+---
+
 ## [1.0.0] - 2026-01-29
 
 ### Added

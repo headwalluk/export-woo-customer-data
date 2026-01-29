@@ -4,7 +4,7 @@ Tags: woocommerce, export, csv, customers, users
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,6 +72,15 @@ CSV files are generated on-demand and streamed directly to the browser. No files
 2. Example CSV output in Excel
 
 == Changelog ==
+
+= 1.1.0 - 2026-01-29 =
+* Refactored plugin architecture for better code organization
+* Extracted dashboard widget to separate template file
+* Improved PHPDoc documentation throughout
+* Enhanced code standards compliance
+* Added Admin_Hooks class for admin functionality
+* Implemented lazy loading for better performance
+* Cleaned up legacy commented code
 
 = 1.0.0 - 2026-01-29 =
 * Initial release

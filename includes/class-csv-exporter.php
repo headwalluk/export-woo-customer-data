@@ -68,8 +68,7 @@ class CSV_Exporter {
 		$customer_ids = array();
 
 		// Check if HPOS is enabled.
-		if ( class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' )
-			&& \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		if ( class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' ) && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ) {
 			// Query HPOS tables for customer IDs.
 			$customer_ids = $wpdb->get_col(
 				"SELECT DISTINCT customer_id
@@ -168,11 +167,7 @@ class CSV_Exporter {
 	private function generate_csv( array $data, string $filename ): void {
 		// Handle empty dataset.
 		if ( empty( $data ) ) {
-			wp_die(
-				esc_html__( 'No data available to export.', 'export-woo-customer-data' ),
-				esc_html__( 'Export Failed', 'export-woo-customer-data' ),
-				array( 'response' => 404 )
-			);
+			wp_die( esc_html__( 'No data available to export.', 'export-woo-customer-data' ), esc_html__( 'Export Failed', 'export-woo-customer-data' ), array( 'response' => 404 ) );
 		}
 
 		// Set HTTP headers for CSV download.
@@ -185,11 +180,7 @@ class CSV_Exporter {
 		$output = fopen( 'php://output', 'w' );
 
 		if ( false === $output ) {
-			wp_die(
-				esc_html__( 'Failed to open output stream.', 'export-woo-customer-data' ),
-				esc_html__( 'Export Failed', 'export-woo-customer-data' ),
-				array( 'response' => 500 )
-			);
+			wp_die( esc_html__( 'Failed to open output stream.', 'export-woo-customer-data' ), esc_html__( 'Export Failed', 'export-woo-customer-data' ), array( 'response' => 500 ) );
 		}
 
 		// Write UTF-8 BOM for Excel compatibility.
@@ -205,6 +196,6 @@ class CSV_Exporter {
 		}
 
 		fclose( $output );
-		exit;
+		exit();
 	}
 }

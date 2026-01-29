@@ -1,0 +1,62 @@
+name: Build Release Zips
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Get version from tag
+        id: get_version
+        run: |
+          # Extract version from tag (e.g., v1.1.0 -> 1.1.0)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+      
+      - name: Create build directory
+        run: |
+          mkdir -p build/export-woo-customer-data
+      
+      - name: Copy plugin files
+        run: |
+          # Copy only the files needed for the plugin
+          rsync -av --exclude-from=.distignore ./ build/export-woo-customer-data/
+      
+      - name: Create version-agnostic zip
+        run: |
+          cd build
+          zip -r ../export-woo-customer-data.zip export-woo-customer-data/
+          cd ..
+      
+      - name: Create versioned zip
+        run: |
+          cd build
+          zip -r ../export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip export-woo-customer-data/
+          cd ..
+      
+      - name: Upload version-agnostic zip to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./export-woo-customer-data.zip
+          asset_name: export-woo-customer-data.zip
+          asset_content_type: application/zip
+      
+      - name: Upload versioned zip to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip
+          asset_name: export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip
+          asset_content_type: application/zip
