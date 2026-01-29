@@ -4,7 +4,7 @@ Tags: woocommerce, export, csv, customers, users
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,6 +72,12 @@ CSV files are generated on-demand and streamed directly to the browser. No files
 2. Example CSV output in Excel
 
 == Changelog ==
+
+= 1.1.1 - 2026-01-29 =
+* Performance: Skip total count query for better performance with large user datasets
+* Performance: Added cache suspension to prevent memory issues
+* Security: Added filename sanitization to CSV headers
+* Code quality: Fixed all PHPCS spacing violations
 
 = 1.1.0 - 2026-01-29 =
 * Refactored plugin architecture for better code organization

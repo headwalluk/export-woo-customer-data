@@ -48,7 +48,16 @@ class CSV_Exporter {
 	 * @return array<int, array<string, mixed>> User data array.
 	 */
 	private function get_all_users(): array {
-		$users  = get_users( array( 'fields' => 'all' ) );
+		// Suspend cache to prevent memory issues with large user datasets.
+		wp_suspend_cache_addition( true );
+		$users = get_users(
+			array(
+				'fields'      => 'all',
+				'count_total' => false,
+			)
+		);
+		wp_suspend_cache_addition( false );
+
 		$result = $this->format_user_data( $users );
 
 		return $result;
@@ -92,12 +101,16 @@ class CSV_Exporter {
 		}
 
 		// Get user objects for customer IDs.
+		// Suspend cache to prevent memory issues with large user datasets.
+		wp_suspend_cache_addition( true );
 		$users = get_users(
 			array(
-				'include' => $customer_ids,
-				'fields'  => 'all',
+				'include'     => $customer_ids,
+				'fields'      => 'all',
+				'count_total' => false,
 			)
 		);
+		wp_suspend_cache_addition( false );
 
 		$result = $this->format_user_data( $users );
 
@@ -117,6 +130,8 @@ class CSV_Exporter {
 		$result = array();
 		$fields = $this->get_field_mapping();
 
+		// Suspend cache to prevent memory issues with large user datasets.
+		wp_suspend_cache_addition( true );
 		foreach ( $users as $user ) {
 			$row = array();
 
@@ -138,6 +153,7 @@ class CSV_Exporter {
 
 			$result[] = $row;
 		}
+		wp_suspend_cache_addition( false );
 
 		return $result;
 	}
@@ -172,7 +188,7 @@ class CSV_Exporter {
 
 		// Set HTTP headers for CSV download.
 		header( 'Content-Type: text/csv; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+		header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $filename ) . '"' );
 		header( 'Pragma: no-cache' );
 		header( 'Expires: 0' );
 

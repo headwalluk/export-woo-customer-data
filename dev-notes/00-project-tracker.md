@@ -1,6 +1,6 @@
 # Project Tracker - Export Woo Customer Data
 
-**Version:** 1.1.0
+**Version:** 1.1.1
 **Last Updated:** 29 January 2026
 **Current Phase:** Complete - Production Ready
 **Overall Progress:** 100%

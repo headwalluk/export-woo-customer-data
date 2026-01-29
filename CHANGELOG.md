@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.1] - 2026-01-29
+
+### Changed
+- Performance optimization: Skip total count query in `get_users()` calls
+- Added cache suspension to prevent memory issues with large user datasets
+- Improved security with filename sanitization in CSV headers
+
+### Added
+- Explanatory comments for cache suspension usage
+- `'count_total' => false` parameter to all user queries for better performance
+- Defense-in-depth filename sanitization
+
+### Technical
+- All code standards violations auto-fixed via PHPCBF
+- Only acceptable warnings remain (DB queries, meta_key usage)
+
+---
+
 ## [1.1.0] - 2026-01-29
 
 ### Changed

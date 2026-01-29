@@ -1,13 +1,13 @@
 # Export Woo Customer Data
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue.svg)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)
 ![WooCommerce](https://img.shields.io/badge/WooCommerce-9.0%2B-96588a.svg)
 ![License](https://img.shields.io/badge/license-GPLv2-green.svg)
 ![HPOS Compatible](https://img.shields.io/badge/HPOS-Compatible-green.svg)
 
-**Version:** 1.1.0  
+**Version:** 1.1.1  
 **Requires:** WordPress 6.0+, PHP 8.0+, WooCommerce 9.0+  
 **License:** GPLv2 or later
 
