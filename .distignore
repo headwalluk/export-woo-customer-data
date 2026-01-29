@@ -19,7 +19,9 @@ webpack.config.js
 gulpfile.js
 Gruntfile.js
 
-# Documentation (keep README.md and readme.txt)
+# Documentation (keep only readme.txt for WordPress)
+README.md
+CHANGELOG.md
 CONTRIBUTING.md
 
 # OS files

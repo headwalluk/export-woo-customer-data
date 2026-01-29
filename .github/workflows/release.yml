@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,22 +44,9 @@ jobs:
           zip -r ../export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip export-woo-customer-data/
           cd ..
       
-      - name: Upload version-agnostic zip to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./export-woo-customer-data.zip
-          asset_name: export-woo-customer-data.zip
-          asset_content_type: application/zip
-      
-      - name: Upload versioned zip to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip
-          asset_name: export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip
-          asset_content_type: application/zip
+          files: |
+            export-woo-customer-data.zip
+            export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip
