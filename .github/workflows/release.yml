@@ -30,7 +30,7 @@ jobs:
       - name: Copy plugin files
         run: |
           # Copy only the files needed for the plugin
-          rsync -av --exclude-from=.distignore ./ build/export-woo-customer-data/
+          rsync -av --exclude-from=.distignore --exclude=build ./ build/export-woo-customer-data/
       
       - name: Create version-agnostic zip
         run: |
