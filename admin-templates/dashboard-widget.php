@@ -18,12 +18,12 @@ $url_customers = home_url( '/wp-admin/exportwcd-reports/' . CSV_FILENAME_CUSTOME
 
 echo '<div class="export-woo-customer-data-widget">';
 
-printf( '<p>%s</p>', esc_html__( 'Export customer data to CSV format.', 'export-woo-customer-data' ) );
+printf( '<p>%s</p>', esc_html__( 'Download customer data as a CSV file.', 'export-woo-customer-data' ) );
 
-printf( '<p><a href="%s" class="button button-primary">%s</a></p>', esc_url( $url_all_users ), esc_html__( 'Export All Users', 'export-woo-customer-data' ) );
+printf( '<p><a href="%s" class="button" style="display:block;"><span class="dashicons dashicons-download" style="position:relative;top:0.2em;"></span> %s</a></p>', esc_url( $url_all_users ), esc_html__( 'Export All Users', 'export-woo-customer-data' ) );
 
 if ( is_woocommerce_active() ) {
-	printf( '<p><a href="%s" class="button button-secondary">%s</a></p>', esc_url( $url_customers ), esc_html__( 'Export Customers Only', 'export-woo-customer-data' ) );
+	printf( '<p><a href="%s" class="button" style="display:block;"><span class="dashicons dashicons-download" style="position:relative;top:0.2em;"></span> %s</a></p>', esc_url( $url_customers ), esc_html__( 'Export Customers Only', 'export-woo-customer-data' ) );
 } else {
 	printf( '<p><em>%s</em></p>', esc_html__( 'Install WooCommerce to export customers only.', 'export-woo-customer-data' ) );
 }

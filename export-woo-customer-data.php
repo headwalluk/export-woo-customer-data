@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Export Woo Customer Data
- * Plugin URI: https://headwall-hosting.com
+ * Plugin URI: https://headwall-hosting.com/plugins/export-woo-customer-data/
  * Description: Export WooCommerce customer data to CSV with customisable fields via dashboard widget.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Paul Faulkner
  * Author URI: https://headwall-hosting.com
  * Text Domain: export-woo-customer-data
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || die();
 
-define( 'EXPORT_WCD_VERSION', '1.1.1' );
+define( 'EXPORT_WCD_VERSION', '1.1.2' );
 define( 'EXPORT_WCD_FILE', __FILE__ );
 define( 'EXPORT_WCD_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EXPORT_WCD_URL', plugin_dir_url( __FILE__ ) );

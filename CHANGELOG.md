@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.2] - 2026-01-30
+
+### Changed
+- Dashboard widget description text updated for clarity ("Download customer data as a CSV file")
+- Button styling simplified to use standard WordPress button class
+- Buttons now display as block elements for improved layout
+
+### Added
+- Download icons (dashicons-download) to both export buttons
+
+### Removed
+- Primary/secondary button classes in favor of unified styling
+
+---
+
 ## [1.1.1] - 2026-01-29
 
 ### Changed
