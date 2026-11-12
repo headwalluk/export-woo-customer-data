@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-**Breaking changes, released as 2.0.0.** The download addresses have changed, and PHP 8.2 and WordPress 6.2 are now required. Version 1.x had no updater, so every site needs this version installed by hand once; later versions update themselves.
+## [2.0.0] - 2026-11-12
+
+**Breaking changes.** The download addresses have changed, and PHP 8.2 and WordPress 6.2 are now required. Version 1.x had no updater, so every site needs this version installed by hand once; later versions update themselves.
 
 ### Changed
 

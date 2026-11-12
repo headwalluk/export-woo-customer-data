@@ -3,7 +3,7 @@
  * Plugin Name: Export Woo Customer Data
  * Plugin URI: https://headwall-hosting.com/plugins/export-woo-customer-data/
  * Description: Download your users or WooCommerce customers as a CSV file from a Dashboard widget, with names, email addresses and phone numbers.
- * Version: 1.1.2
+ * Version: 2.0.0
  * Requires at least: 6.2
  * Requires PHP: 8.2
  * WC requires at least: 9.0
@@ -21,7 +21,7 @@
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || die();
 
-define( 'EXPORT_WOO_CUSTOMER_DATA_VERSION', '1.1.2' );
+define( 'EXPORT_WOO_CUSTOMER_DATA_VERSION', '2.0.0' );
 define( 'EXPORT_WOO_CUSTOMER_DATA_FILE', __FILE__ );
 define( 'EXPORT_WOO_CUSTOMER_DATA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'EXPORT_WOO_CUSTOMER_DATA_URL', plugin_dir_url( __FILE__ ) );
