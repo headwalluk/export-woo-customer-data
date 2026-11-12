@@ -1,117 +1,81 @@
 <?php
 /**
- * Main plugin class.
+ * Main Plugin Class
  *
  * @package Export_Woo_Customer_Data
+ * @since 1.0.0
  */
 
 namespace Export_Woo_Customer_Data;
 
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || die();
 
 /**
- * Main plugin orchestration class.
+ * Main Plugin Class.
  *
  * @since 1.0.0
  */
 class Plugin {
 
 	/**
-	 * Admin hooks handler.
+	 * Single instance of the class.
 	 *
-	 * @var Admin_Hooks|null
+	 * @since 2.0.0
+	 * @var ?Plugin
 	 */
-	private ?Admin_Hooks $admin_hooks = null;
+	private static $instance = null;
 
 	/**
-	 * CSV exporter instance.
+	 * CSV exporter, created on the first download.
 	 *
-	 * @var CSV_Exporter|null
+	 * @since 1.0.0
+	 * @var ?CSV_Exporter
 	 */
 	private ?CSV_Exporter $csv_exporter = null;
 
 	/**
-	 * Run the plugin.
+	 * Get single instance of the class.
 	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
+	 * @since 2.0.0
+	 * @return Plugin
 	 */
-	public function run(): void {
-		register_activation_hook( EXPORT_WCD_BASENAME, array( $this, 'activate' ) );
-		register_deactivation_hook( EXPORT_WCD_BASENAME, array( $this, 'deactivate' ) );
-
-		add_action( 'init', array( $this, 'register_rewrite_rules' ) );
-		add_action( 'admin_init', array( $this, 'admin_init' ) );
-
-		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
-		add_action( 'template_redirect', array( $this, 'handle_export_request' ) );
-
-		add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
-	}
-
-	/**
-	 * Plugin activation hook.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function activate(): void {
-		$this->register_rewrite_rules();
-		flush_rewrite_rules();
-	}
-
-	/**
-	 * Plugin deactivation hook.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function deactivate(): void {
-		flush_rewrite_rules();
-	}
-
-	/**
-	 * Admin initialization hook.
-	 *
-	 * Registers admin-related actions and hooks.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function admin_init(): void {
-		$admin_hooks = $this->get_admin_hooks();
-
-		add_action( 'wp_dashboard_setup', array( $admin_hooks, 'register_dashboard_widget' ) );
-	}
-
-	/**
-	 * Get admin hooks instance (lazy loaded).
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Admin_Hooks Admin hooks instance.
-	 */
-	public function get_admin_hooks(): Admin_Hooks {
-		if ( is_null( $this->admin_hooks ) ) {
-			$this->admin_hooks = new Admin_Hooks( $this->get_version() );
+	public static function instance(): Plugin {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
 		}
 
-		return $this->admin_hooks;
+		return self::$instance;
 	}
 
 	/**
-	 * Get CSV exporter instance (lazy loaded).
+	 * Initialise hooks.
 	 *
 	 * @since 1.0.0
+	 */
+	public function run(): void {
+		$dashboard_widget = new Dashboard_Widget();
+
+		add_action( 'wp_dashboard_setup', array( $dashboard_widget, 'register' ) );
+		add_action( 'admin_post_' . ADMIN_POST_ACTION, array( $this, 'handle_export_request' ) );
+		add_action( 'template_redirect', array( $this, 'redirect_legacy_url' ) );
+		add_action( 'before_woocommerce_init', array( $this, 'declare_woocommerce_compatibility' ) );
+
+		// Supports MU plugin installation where activation hooks don't fire.
+		add_action( 'admin_init', array( $this, 'check_first_run' ), 1 );
+		add_action( 'init', array( $this, 'load_textdomain' ) );
+	}
+
+	/**
+	 * Get the CSV exporter.
 	 *
-	 * @return CSV_Exporter CSV exporter instance.
+	 * @since 1.0.0
+	 * @return CSV_Exporter
 	 */
 	public function get_csv_exporter(): CSV_Exporter {
-		if ( is_null( $this->csv_exporter ) ) {
+		if ( null === $this->csv_exporter ) {
 			$this->csv_exporter = new CSV_Exporter();
 		}
 
@@ -119,94 +83,103 @@ class Plugin {
 	}
 
 	/**
-	 * Register URL rewrite rules.
+	 * Serve a download from admin-post.php, after the capability and nonce checks.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function register_rewrite_rules(): void {
-		add_rewrite_rule( '^wp-admin/exportwcd-reports/([^/]+)\.csv$', 'index.php?' . QUERY_VAR_REPORT . '=$matches[1]', 'top' );
-	}
-
-	/**
-	 * Register custom query vars.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array<int, string> $vars Query vars.
-	 *
-	 * @return array<int, string> Modified query vars.
-	 */
-	public function register_query_vars( array $vars ): array {
-		$vars[] = QUERY_VAR_REPORT;
-		return $vars;
-	}
-
-	/**
-	 * Declare High-Performance Order Storage (HPOS) compatibility.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function declare_hpos_compatibility(): void {
-		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', EXPORT_WCD_FILE, true );
-		}
-	}
-
-	/**
-	 * Handle export request via pretty URL.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
 	 */
 	public function handle_export_request(): void {
-		$report_type = get_query_var( QUERY_VAR_REPORT, '' );
+		$report_type = '';
+		$error       = null;
 
-		// Exit early if not an export request.
-		if ( empty( $report_type ) ) {
-			return;
+		if ( ! current_user_can( REQUIRED_CAPABILITY ) ) {
+			$error = array( __( 'You do not have permission to export customer data.', 'export-woo-customer-data' ), 403 );
+		} elseif ( ! verify_admin_action_nonce( NONCE_EXPORT_ACTION ) ) {
+			$error = array(
+				sprintf(
+					/* translators: %s is the Dashboard widget's title, Export Customer Data */
+					__( 'This download link has expired. Go back to the Dashboard and use the button in the %s widget.', 'export-woo-customer-data' ),
+					get_widget_title()
+				),
+				403,
+			);
+		} else {
+			$report_type = isset( $_GET[ QUERY_ARG_REPORT ] ) ? sanitize_key( wp_unslash( $_GET[ QUERY_ARG_REPORT ] ) ) : '';
+
+			if ( ! is_available_report_type( $report_type ) ) {
+				$error = array( __( 'That report is not available on this site.', 'export-woo-customer-data' ), 400 );
+			}
 		}
 
-		// Verify user capability.
-		if ( ! current_user_can( REQUIRED_CAPABILITY ) ) {
+		if ( null !== $error ) {
 			wp_die(
-				esc_html__( 'You do not have permission to export customer data.', 'export-woo-customer-data' ),
-				esc_html__( 'Permission Denied', 'export-woo-customer-data' ),
+				esc_html( $error[0] ),
+				esc_html__( 'Export Customer Data', 'export-woo-customer-data' ),
 				array(
-					'response' => 403,
+					'response'  => (int) $error[1],
+					'back_link' => true,
 				)
 			);
+		} else {
+			$this->get_csv_exporter()->send( $report_type );
+			exit();
 		}
-
-		// Validate report type.
-		if ( ! in_array( $report_type, array( REPORT_TYPE_ALL_USERS, REPORT_TYPE_CUSTOMERS ), true ) ) {
-			wp_die( esc_html__( 'Invalid report type.', 'export-woo-customer-data' ), esc_html__( 'Invalid Request', 'export-woo-customer-data' ), array( 'response' => 400 ) );
-		}
-
-		// Generate and serve CSV export.
-		$exporter = $this->get_csv_exporter();
-
-		if ( REPORT_TYPE_ALL_USERS === $report_type ) {
-			$exporter->export_all_users();
-		} elseif ( REPORT_TYPE_CUSTOMERS === $report_type ) {
-			$exporter->export_customers_only();
-		}
-
-		exit();
 	}
 
 	/**
-	 * Get plugin version.
+	 * Send the 1.x download URLs to the Dashboard, where the widget's links carry a nonce.
+	 *
+	 * @since 2.0.0
+	 */
+	public function redirect_legacy_url(): void {
+		$request_uri  = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$request_path = (string) wp_parse_url( $request_uri, PHP_URL_PATH );
+
+		if ( 1 === preg_match( LEGACY_URL_PATTERN, $request_path ) ) {
+			wp_safe_redirect( admin_url() );
+			exit();
+		}
+	}
+
+	/**
+	 * Declare HPOS and Checkout block compatibility.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @return string Plugin version.
 	 */
-	public function get_version(): string {
-		return EXPORT_WCD_VERSION;
+	public function declare_woocommerce_compatibility(): void {
+		if ( class_exists( FeaturesUtil::class ) ) {
+			FeaturesUtil::declare_compatibility( 'custom_order_tables', EXPORT_WOO_CUSTOMER_DATA_FILE, true );
+			FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', EXPORT_WOO_CUSTOMER_DATA_FILE, true );
+		}
+	}
+
+	/**
+	 * Load plugin text domain for translations.
+	 *
+	 * Needed for the translations shipped in the plugin's own languages/ directory.
+	 *
+	 * @since 2.0.0
+	 */
+	public function load_textdomain(): void {
+		load_plugin_textdomain( 'export-woo-customer-data', false, dirname( EXPORT_WOO_CUSTOMER_DATA_BASENAME ) . '/languages' );
+	}
+
+	/**
+	 * Record the installed version when activation didn't, and keep it current.
+	 *
+	 * A first record also flushes the rewrite rules, which drops the rule 1.x added.
+	 *
+	 * @since 2.0.0
+	 */
+	public function check_first_run(): void {
+		$stored_version = get_option( OPTION_VERSION );
+
+		if ( false === $stored_version ) {
+			add_option( OPTION_VERSION, EXPORT_WOO_CUSTOMER_DATA_VERSION, '', true );
+			flush_rewrite_rules( false );
+		} elseif ( EXPORT_WOO_CUSTOMER_DATA_VERSION !== $stored_version ) {
+			update_option( OPTION_VERSION, EXPORT_WOO_CUSTOMER_DATA_VERSION );
+		} else {
+			// Stored version is already current.
+		}
 	}
 }

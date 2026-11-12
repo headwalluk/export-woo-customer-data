@@ -1,8 +1,9 @@
-name: Build Release Zips
+name: Build Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -10,43 +11,92 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Get version from tag
         id: get_version
         run: |
-          # Extract version from tag (e.g., v1.1.0 -> 1.1.0)
+          # Remove 'v' prefix from tag (v1.0.0 -> 1.0.0)
           VERSION=${GITHUB_REF#refs/tags/v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Building version: $VERSION"
-      
-      - name: Create build directory
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Plugin version: ${VERSION}"
+
+      - name: Verify version numbers agree
+        env:
+          TAG_VERSION: ${{ steps.get_version.outputs.version }}
         run: |
-          mkdir -p build/export-woo-customer-data
-      
-      - name: Copy plugin files
+          set -euo pipefail
+
+          # The updater compares EXPORT_WOO_CUSTOMER_DATA_VERSION against the release tag, so a
+          # header and constant that disagree advertise a permanent false update.
+          HEADER_VERSION=$(sed -n 's/^ \* Version:[[:space:]]*\(.*\)$/\1/p' export-woo-customer-data.php | head -1 | tr -d '[:space:]')
+          CONSTANT_VERSION=$(sed -n "s/^define( 'EXPORT_WOO_CUSTOMER_DATA_VERSION', '\(.*\)' );[[:space:]]*$/\1/p" export-woo-customer-data.php | head -1 | tr -d '[:space:]')
+
+          echo "Git tag ................ ${TAG_VERSION}"
+          echo "Plugin header .......... ${HEADER_VERSION}"
+          echo "EXPORT_WOO_CUSTOMER_DATA_VERSION . ${CONSTANT_VERSION}"
+
+          VERSION_MISMATCH=0
+          for CANDIDATE_VERSION in "${HEADER_VERSION}" "${CONSTANT_VERSION}"; do
+            if [ "${CANDIDATE_VERSION}" != "${TAG_VERSION}" ]; then
+              VERSION_MISMATCH=1
+            fi
+          done
+
+          if [ "${VERSION_MISMATCH}" -ne 0 ]; then
+            echo "::error::Version mismatch. The plugin header and EXPORT_WOO_CUSTOMER_DATA_VERSION must both read ${TAG_VERSION}."
+            exit 1
+          fi
+
+          echo "All version numbers agree on ${TAG_VERSION}."
+
+      - name: Prepare plugin directory
         run: |
-          # Copy only the files needed for the plugin
-          rsync -av --exclude-from=.distignore --exclude=build ./ build/export-woo-customer-data/
-      
-      - name: Create version-agnostic zip
+          mkdir -p build
+          rsync -av --exclude-from=.distignore ./ build/export-woo-customer-data/
+
+      - name: Build release zips
+        # Build the versioned zip once, then copy it to the generic
+        # filename so both artifacts are guaranteed byte-identical
+        # (same SHA256, just different filenames).
         run: |
           cd build
-          zip -r ../export-woo-customer-data.zip export-woo-customer-data/
+          zip -r export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip export-woo-customer-data/
+          cp export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip export-woo-customer-data.zip
           cd ..
-      
-      - name: Create versioned zip
-        run: |
-          cd build
-          zip -r ../export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip export-woo-customer-data/
-          cd ..
-      
-      - name: Upload release assets
+
+      - name: Upload versioned zip as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: export-woo-customer-data-${{ steps.get_version.outputs.version }}
+          path: build/export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip
+
+      - name: Upload generic zip as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: export-woo-customer-data
+          path: build/export-woo-customer-data.zip
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            export-woo-customer-data.zip
-            export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip
+            build/export-woo-customer-data-${{ steps.get_version.outputs.version }}.zip
+            build/export-woo-customer-data.zip
+          body: |
+            **Export Woo Customer Data v${{ steps.get_version.outputs.version }}**
+
+            Download your WordPress users or WooCommerce customers as a CSV file from a Dashboard widget.
+
+            Download `export-woo-customer-data.zip` and install via WordPress admin (Plugins → Add New → Upload Plugin), or upload to your `wp-content/plugins/` directory.
+
+            Sites running a previous version will receive this update automatically via the in-plugin GitHub updater.
+
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for full release notes.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

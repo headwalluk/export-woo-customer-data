@@ -1,0 +1,93 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Export Woo Customer Data 1.1.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/export-woo-customer-data\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-12T13:01:10+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: export-woo-customer-data\n"
+
+#. Plugin Name of the plugin
+#: export-woo-customer-data.php
+msgid "Export Woo Customer Data"
+msgstr "Export Woo Customer Data"
+
+#. Plugin URI of the plugin
+#: export-woo-customer-data.php
+msgid "https://headwall-hosting.com/plugins/export-woo-customer-data/"
+msgstr "https://headwall-hosting.com/plugins/export-woo-customer-data/"
+
+#. Description of the plugin
+#: export-woo-customer-data.php
+msgid "Download your users or WooCommerce customers as a CSV file from a Dashboard widget, with names, email addresses and phone numbers."
+msgstr "Laden Sie Ihre Nutzer oder WooCommerce-Kunden als CSV-Datei über ein Dashboard-Widget herunter – einschließlich Namen, E-Mail-Adressen und Telefonnummern."
+
+#. Author of the plugin
+#: export-woo-customer-data.php
+msgid "Paul Faulkner"
+msgstr "Paul Faulkner"
+
+#. Author URI of the plugin
+#: export-woo-customer-data.php
+msgid "https://headwall-hosting.com/a-web-guys-blog/"
+msgstr "https://headwall-hosting.com/a-web-guys-blog/"
+
+#: includes/class-csv-exporter.php:44
+msgid "No customers have placed an order yet, so there is nothing to export."
+msgstr "Es haben noch keine Kunden eine Bestellung aufgegeben, daher gibt es nichts zu exportieren."
+
+#: includes/class-csv-exporter.php:45
+msgid "Nothing to export"
+msgstr "Es gibt nichts zu exportieren"
+
+#: includes/class-csv-exporter.php:51
+msgid "The export could not be started. The server log has the details."
+msgstr "Der Export konnte nicht gestartet werden. Die Details finden Sie im Serverprotokoll."
+
+#: includes/class-csv-exporter.php:52
+msgid "Export failed"
+msgstr "Der Export ist fehlgeschlagen"
+
+#: functions-private.php:36
+#: includes/class-plugin.php:116
+msgid "Export Customer Data"
+msgstr "Kundendaten exportieren"
+
+#: includes/class-plugin.php:95
+msgid "You do not have permission to export customer data."
+msgstr "Sie haben keine Berechtigung, Kundendaten zu exportieren."
+
+#: includes/class-plugin.php:109
+msgid "That report is not available on this site."
+msgstr "Dieser Bericht ist auf dieser Website nicht verfügbar."
+
+#: views/dashboard-widget.php:23
+msgid "Download customer data as a CSV file."
+msgstr "Kundendaten als CSV-Datei herunterladen."
+
+#. translators: %s is the Dashboard widget's title, Export Customer Data
+#: includes/class-plugin.php:100
+#, php-format
+msgid "This download link has expired. Go back to the Dashboard and use the button in the %s widget."
+msgstr "Dieser Download-Link ist abgelaufen. Kehren Sie zum Dashboard zurück und nutzen Sie die Schaltfläche im %s-Widget."
+
+#: views/dashboard-widget.php:28
+msgctxt "button label: download a CSV of every user account"
+msgid "Export All Users"
+msgstr "Alle Benutzer exportieren"
+
+#: views/dashboard-widget.php:35
+msgctxt "button label: download a CSV of only the users who have placed an order"
+msgid "Export Customers Only"
+msgstr "Nur Kunden exportieren"
+
+#: views/dashboard-widget.php:38
+msgid "Exporting only customers needs WooCommerce, which is not active on this site."
+msgstr "Um nur Kunden zu exportieren, ist WooCommerce erforderlich, das auf dieser Website jedoch nicht aktiviert ist."

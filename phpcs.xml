@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<ruleset name="Export Woo Customer Data Standards">
+	<description>WordPress Coding Standards for Export Woo Customer Data</description>
+
+	<config name="minimum_wp_version" value="6.2"/>
+	<config name="testVersion" value="8.2-"/>
+	
+	<file>.</file>
+	
+	<!-- Exclude patterns -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/assets/*</exclude-pattern>
+	<exclude-pattern>*/.git/*</exclude-pattern>
+	<exclude-pattern>*/dev-notes/*</exclude-pattern>
+	<exclude-pattern>*/docs/*</exclude-pattern>
+	
+	<!-- Arguments -->
+	<arg value="sp"/>
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+	
+	<!-- Rules -->
+	<rule ref="WordPress">
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+
+		<!-- An if with elseif branches ends in an explicit else, with no-op branches
+		     holding only a comment. This sniff counts a comment as
+		     empty, so only its if/elseif/else codes are excluded; empty catch, loop and
+		     switch bodies are still errors. -->
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedIf"/>
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedElseif"/>
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedElse"/>
+	</rule>
+	
+	<!-- Nonce verification is wrapped in verify_admin_action_nonce() (functions-private.php),
+	     so the sniff cannot see the wp_verify_nonce() call inline. Declaring the
+	     wrapper keeps the sniff working, rather than sprinkling phpcs:ignore at
+	     every $_GET read. -->
+	<rule ref="WordPress.Security.NonceVerification">
+		<properties>
+			<property name="customNonceVerificationFunctions" type="array">
+				<element value="verify_admin_action_nonce"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Prefixes -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="export_woo_customer_data"/>
+				<element value="Export_Woo_Customer_Data"/>
+				<element value="EXPORT_WOO_CUSTOMER_DATA"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

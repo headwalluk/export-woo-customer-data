@@ -1,43 +1,49 @@
-# Directories
-/.git
-/.github
-/dev-notes
-/node_modules
-/vendor
+# Files and directories excluded from release builds.
+# Used by .github/workflows/release.yml via `rsync --exclude-from`.
 
-# Development files
-.distignore
+# Version control
+.git
 .gitignore
 .gitattributes
-phpcs.xml
-phpcs.xml.dist
+.github
+
+# Development notes and docs: not for the release zip
+dev-notes
+docs
+
+# Build / dependency manifests
+build
+node_modules
+vendor
 composer.json
 composer.lock
 package.json
 package-lock.json
-webpack.config.js
-gulpfile.js
-Gruntfile.js
 
-# Documentation (keep only readme.txt for WordPress)
-README.md
-CHANGELOG.md
-CONTRIBUTING.md
+# Tooling configs
+.distignore
+phpcs.xml
+phpcs.xml.dist
+.phpcs.xml
+.phpcs.xml.dist
+.editorconfig
+.eslintrc
+.eslintrc.json
+.prettierrc
+.prettierrc.json
 
-# OS files
-.DS_Store
-Thumbs.db
-*.log
-
-# IDE files
+# IDE / OS metadata
 .vscode
 .idea
-*.sublime-project
-*.sublime-workspace
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
 
-# Testing files
-/tests
-/bin
-phpunit.xml
-phpunit.xml.dist
-.phpunit.result.cache
+# Project meta files (kept on GitHub, stripped from release zip).
+README.md
+CHANGELOG.md
+SECURITY.md
+CLAUDE.md
+.claude

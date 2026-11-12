@@ -1,37 +1,33 @@
-# WordPress
-.htaccess
-
-# Operating System
+# OS files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# IDEs
+# IDE files
 .idea/
 .vscode/
 *.sublime-project
 *.sublime-workspace
-*.swp
-*.swo
 
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Claude Code per-machine settings
+.claude/settings.local.json
 
-# Dependencies
-/node_modules/
-/vendor/
+# Node modules (if needed later)
+node_modules/
+
+# Composer
+vendor/
+composer.lock
 
 # Build files
-/build/
-/dist/
+*.map
 
-# Temporary files
-*.tmp
-*~
+# WordPress
+wp-config.php
+
+# Private development notes. Never published: may contain client details
+# and test data. Backed up with the dev site,
+# and blocked from remote access by dev-notes/.htaccess.
+dev-notes/
+
+# Emacs Projectile project marker
+.projectile
